@@ -2,7 +2,6 @@ version: '3'
 services:
   stock-api-service:
     image: ngthminhdev/electric-board-backend:${TAG}
-    restart: always
     deploy:
       replicas: 1
     ports:

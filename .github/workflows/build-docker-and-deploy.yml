@@ -63,5 +63,3 @@ jobs:
         port: ${{secrets.SSH_PORT}}
         script: |
           cd ~/stock-server && export TAG=${{ steps.get_version.outputs.version }} && sudo chmod +x deploy.sh && ./deploy.sh
-    
-    

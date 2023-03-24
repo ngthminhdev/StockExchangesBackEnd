@@ -1,17 +1,16 @@
 version: '3'
 services:
-  nestjs-service:
+  stock-api-service:
     image: ngthminhdev/electric-board-backend:${TAG}
     restart: always
     deploy:
       replicas: 1
-    ports: 
+    ports:
       - '3001:3001'
     environment:
       - CONFIG_SERVER_HOST=13.229.70.136
       - CONFIG_SERVER_PORT=3001
       - CONFIG_API_PREFIX=api
-      - CONFIG_STRATEGY=jwt
       - CONFIG_WHITELIST_IPS=
       - CONFIG_POSTGRES_HOST=minh.ceakpvhscsux.ap-southeast-1.rds.amazonaws.com
       - CONFIG_POSTGRES_PORT=5432

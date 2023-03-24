@@ -1,5 +1,5 @@
-# .github/workflows/docker-image.yml
-name: Docker AHP Demo
+# .github/workflows/build-docker-and-deploy.yml
+name: Docker Stock Serverw
 
 on:
   push:
@@ -28,11 +28,10 @@ jobs:
     - name: UnitTest ${{matrix.node-version}}
       uses: actions/setup-node@v3
       with:
-        node-version: 16
+        node-version: ${{matrix.node-version}}
         cache: 'yarn'
     - run: yarn install --frozen-lockfile
-    - run: yarn build
-    - run: yarn start
+    - run: yarn test
     
     - name: Login Docker Hub
       uses: docker/login-action@v2

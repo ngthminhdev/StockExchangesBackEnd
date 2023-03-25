@@ -1,1 +1,1 @@
-sudo docker stack deploy --compose-file docker-compose.yml --with-registry-auth stock-server --set TAG=${TAG}
+sudo TAG=${TAG} docker stack deploy --compose-file docker-compose.yml --with-registry-auth stock-server

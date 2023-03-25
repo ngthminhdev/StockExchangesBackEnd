@@ -11,7 +11,6 @@ export class RegisterDto {
     })
     account_name: string;
 
-
     @IsString({message: 'username not found'})
     @ApiProperty({
         type: String,

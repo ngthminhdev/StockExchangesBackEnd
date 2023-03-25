@@ -3,6 +3,21 @@ import {IsPhoneNumber, IsString, Matches, Validate, ValidateIf,} from 'class-val
 import {PasswordMatchValidator} from "../../validators/password-match.validator";
 
 export class RegisterDto {
+    @IsString({message: 'account_name not found'})
+    @ApiProperty({
+        type: String,
+        example: 'tentaikhoan',
+    })
+    account_name: string;
+
+
+    @IsString({message: 'username not found'})
+    @ApiProperty({
+        type: String,
+        example: 'Nguyễn Văn A',
+    })
+    username: string;
+
     @IsPhoneNumber('VN')
     @ApiProperty({
         type: String,
@@ -30,13 +45,6 @@ export class RegisterDto {
         example: '123Beta456@',
     })
     confirm_password: string;
-
-    @IsString({message: 'first_name not found'})
-    @ApiProperty({
-        type: String,
-        example: 'Nguyen',
-    })
-    first_name: string;
 
     @IsString({message: 'last_name not found'})
     @ApiProperty({

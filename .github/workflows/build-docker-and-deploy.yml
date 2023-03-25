@@ -1,5 +1,5 @@
 # .github/workflows/build-docker-and-deploy.yml
-name: Docker Stock Serverw
+name: Docker Stock Server
 
 on:
   push:
@@ -62,7 +62,4 @@ jobs:
         key: ${{secrets.SSH_KEY}}
         port: ${{secrets.SSH_PORT}}
         script: |
-          export TAG=${{ steps.get_version.outputs.version }}
-          cd ~/stock-server && sudo chmod +x ./deploy.sh && ./deploy.sh
-    
-    
+          export TAG=${{ steps.get_version.outputs.version }} && cd ~/stock-server && sudo chmod +x ./deploy.sh && ./deploy.sh

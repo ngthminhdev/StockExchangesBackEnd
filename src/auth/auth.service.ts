@@ -27,13 +27,14 @@ export class AuthService {
     userSign(user: UserEntity) {
         return {
             user_id: user.user_id,
+            username: user.username,
+            account_name: user.account_name,
             email: user.email,
-            name: user.name,
-            avatar: user.avatar,
-            date_of_birth: user.date_of_birth,
             phone: user.phone,
-            is_verified: user.is_verified,
             role: user.role,
+            avatar: user.avatar,
+            is_verified: user.is_verified,
+            date_of_birth: user.date_of_birth,
             address: user.address,
         };
     }
@@ -41,16 +42,15 @@ export class AuthService {
     async register(data: RegisterDto): Promise<boolean> {
         try {
             const user = await this.userRepo.findOne({
-                where: {phone: data.phone},
+                where: {account_name: data.account_name},
             });
             if (user) {
-                throw new ExceptionResponse(HttpStatus.BAD_REQUEST, 'Số điện thoại đã được đăng ký');
+                throw new ExceptionResponse(HttpStatus.BAD_REQUEST, 'Tài khoản đã được đăng ký');
             }
             const saltOrRounds = 10;
             const hash: string = await bcrypt.hash(data.password, saltOrRounds);
             const userSave: UserEntity = await this.userRepo.save({
-                name: data.first_name + ' ' + data.last_name,
-                phone: data.phone,
+                ...data,
                 password: hash,
             });
             await this.authRepo.save({user: userSave});
@@ -61,42 +61,38 @@ export class AuthService {
         }
     }
 
-    /**
-     * Tạo thêm auth Record sau khi user đăng nhập
-     */
     async login(loginDto: LoginDto, res: Response): Promise<UserResponse> {
         try {
             //logic
-            const {phone, password} = loginDto;
-            const userByPhone = await this.userRepo.findOne({where: {phone}});
-            if (!userByPhone) {
-                throw new ExceptionResponse(HttpStatus.BAD_REQUEST, 'Số điện thoại chưa được đăng ký');
+            const {account_name, password} = loginDto;
+            const user = await this.userRepo.findOne({where: {account_name}});
+            if (!user) {
+                throw new ExceptionResponse(HttpStatus.BAD_REQUEST, 'Tài khoản không tồn tại');
             };
 
-            const isPasswordMatch = await bcrypt.compare(password, userByPhone.password);
+            const isPasswordMatch = await bcrypt.compare(password, user.password);
 
             if (!isPasswordMatch) {
-                throw new ExceptionResponse(HttpStatus.BAD_REQUEST,'Số điện thoại / mật khẩu không chính xác');
+                throw new ExceptionResponse(HttpStatus.BAD_REQUEST,'Tài khoản / mật khẩu không chính xác');
             };
 
-            delete userByPhone.password;
+            delete user.password;
 
-            const accessToken: string = this.generateAccessToken(userByPhone);
-            const refreshToken: string = this.generateRefreshToken(userByPhone);
+            const accessToken: string = this.generateAccessToken(user);
+            const refreshToken: string = this.generateRefreshToken(user);
 
             await this.authRepo.update(
-                {user: {user_id: userByPhone.user_id}},
+                {user: {user_id: user.user_id}},
                 {access_token: accessToken, refresh_token: refreshToken},
             );
 
             res.cookie('refreshToken', refreshToken, {
+                httpOnly:true,
                 path: '/',
-                secure: true,
-                sameSite: "none"
             });
 
             return new UserResponse({
-                ...userByPhone,
+                ...user,
                 access_token: accessToken,
             });
         } catch (e) {

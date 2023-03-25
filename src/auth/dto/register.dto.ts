@@ -1,5 +1,5 @@
 import {ApiProperty} from '@nestjs/swagger';
-import {IsPhoneNumber, IsString, Matches, Validate, ValidateIf,} from 'class-validator';
+import { IsEmail, IsPhoneNumber, IsString, Matches, Validate, ValidateIf } from "class-validator";
 import {PasswordMatchValidator} from "../../validators/password-match.validator";
 
 export class RegisterDto {
@@ -17,6 +17,13 @@ export class RegisterDto {
         example: 'Nguyễn Văn A',
     })
     username: string;
+
+    @IsEmail()
+    @ApiProperty({
+        type: String,
+        example: 'tentaikhoan@email.com',
+    })
+    email: string;
 
     @IsPhoneNumber('VN')
     @ApiProperty({
@@ -45,11 +52,4 @@ export class RegisterDto {
         example: '123Beta456@',
     })
     confirm_password: string;
-
-    @IsString({message: 'last_name not found'})
-    @ApiProperty({
-        type: String,
-        example: 'Minh',
-    })
-    last_name: string;
 }

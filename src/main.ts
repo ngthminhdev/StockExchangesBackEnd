@@ -6,6 +6,9 @@ import { join } from "path";
 import { ExceptionResponse } from "./exceptions/common.exception";
 import { UtilCommonTemplate } from "./utils/utils.common";
 import { ValidationFilter } from "./filters/validation.filter";
+import * as cookieParser from 'cookie-parser';
+import { HttpLogger } from "./interceptors/http-logger";
+import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
@@ -21,6 +24,22 @@ async function bootstrap() {
   // });
 
   app.enableCors({origin: '*'})
+
+  app.use(cookieParser());
+  app.setGlobalPrefix(process.env.API_PREFIX);
+  app.useGlobalInterceptors(new HttpLogger());
+
+  const config = new DocumentBuilder()
+    .addBearerAuth()
+    .setTitle('Stock Swagger')
+    .setDescription('Stock API - Talented Investor')
+    .setVersion('1.0')
+    .build();
+
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('docs', app, document, {
+    customSiteTitle: 'Stock Swagger',
+  });
 
   app.useGlobalFilters(new ValidationFilter());
   app.useGlobalPipes(
@@ -39,7 +58,7 @@ async function bootstrap() {
 
   await app.listen(parseInt(process.env.SERVER_PORT)).then(() => {
     console.log(
-      `Server is running at ${process.env.SERVER_HOST}:${process.env.SERVER_PORT}`,
+      `Server is running at ${process.env.SERVER_HOST}:${process.env.SERVER_PORT} --version: 0.0.02`,
     );
   });
 }

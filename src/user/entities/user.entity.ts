@@ -10,7 +10,6 @@ export class UserEntity extends BaseModel {
   })
   user_id: number;
 
-  @Index()
   @Column({
     type: 'text',
     default: '',
@@ -24,17 +23,18 @@ export class UserEntity extends BaseModel {
   })
   email: string;
 
+  @Index()
   @Column({
     type: 'text',
     default: '',
   })
-  password: string;
+  account_name: string;
 
   @Column({
     type: 'text',
     default: '',
   })
-  name: string;
+  password: string;
 
   @Column({
     type: 'text',

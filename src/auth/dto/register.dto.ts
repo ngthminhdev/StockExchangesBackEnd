@@ -4,6 +4,7 @@ import {PasswordMatchValidator} from "../../validators/password-match.validator"
 
 export class RegisterDto {
     @IsString({message: 'account_name not found'})
+    @Matches(/^\w+$/u, {message: 'account_name is not valid'})
     @ApiProperty({
         type: String,
         example: 'tentaikhoan',

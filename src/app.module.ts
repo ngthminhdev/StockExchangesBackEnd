@@ -6,6 +6,7 @@ import { ConfigServiceProvider } from "./config-module/config-module.service";
 import { JwtModule } from "@nestjs/jwt";
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from "./user/user.module";
+import { StockModule } from './stock/stock.module';
 
 @Module({
   imports: [
@@ -39,7 +40,8 @@ import { UserModule } from "./user/user.module";
 
     //application
     AuthModule,
-    UserModule
+    UserModule,
+    StockModule
   ],
 })
 export class AppModule {}

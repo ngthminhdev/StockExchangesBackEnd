@@ -8,7 +8,7 @@ export class ExceptionResponse extends HttpException {
         message: message ? message : 'Dữ liệu không hợp lệ!',
         data: data || null,
       },
-      HttpStatus.OK,
+      status || HttpStatus.INTERNAL_SERVER_ERROR,
     );
   }
 }

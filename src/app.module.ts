@@ -1,4 +1,4 @@
-import { CacheModule, Module } from "@nestjs/common";
+import { CacheModule, MiddlewareConsumer, Module, NestModule } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { ConfigModuleModule } from "./config-module/config-module.module";
@@ -7,6 +7,7 @@ import { JwtModule } from "@nestjs/jwt";
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from "./user/user.module";
 import { StockModule } from './stock/stock.module';
+import { MacMiddleware } from "./middlewares/mac.middleware";
 
 @Module({
   imports: [
@@ -44,4 +45,10 @@ import { StockModule } from './stock/stock.module';
     StockModule
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(MacMiddleware)
+      .forRoutes('*')
+  }
+}

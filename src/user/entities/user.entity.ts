@@ -1,5 +1,6 @@
-import {Column, Entity, Index, PrimaryGeneratedColumn} from 'typeorm';
+import { Column, Entity, Index, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import {BaseModel} from '../../models/base.entity';
+import { DeviceEntity } from "../../auth/entities/device.entity";
 
 @Entity({
   name: 'user',
@@ -75,4 +76,7 @@ export class UserEntity extends BaseModel {
     default: '',
   })
   address: string;
+
+  @OneToMany(() => DeviceEntity, (device) => device.device_id)
+  devices: DeviceEntity[];
 }

@@ -5,7 +5,7 @@ import { BaseResponse } from "../utils/utils.response";
 import { UserService } from "./user.service";
 import { GetUserIdFromToken } from "../utils/utils.decorators";
 import { CatchException } from "../exceptions/common.exception";
-import { UserResponseSwagger } from "./responses/UserResponse";
+import { UserResponseSwagger } from "./responses/user.response";
 import { DeviceGuard } from "../guards/device.guard";
 
 @ApiTags('User - API')

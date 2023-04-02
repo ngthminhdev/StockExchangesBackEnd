@@ -8,6 +8,6 @@ export class PasswordMatchValidator implements ValidatorConstraintInterface {
     }
 
     defaultMessage(args: ValidationArguments) {
-        return 'Confirm password must match the password';
+        return 'confirm password must match the password';
     }
 }

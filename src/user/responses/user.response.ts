@@ -74,7 +74,7 @@ export class UserResponse {
   @ApiResponseProperty({
     type: Date
   })
-  expired_at: Date
+  expired_at: Date | string
 
   constructor(data?: UserResponse | any) {
     this.user_id = data?.user_id ?? 0;
@@ -87,7 +87,7 @@ export class UserResponse {
     this.role = data?.role ?? 0;
     this.address = data?.address ?? '';
     this.access_token = data?.access_token ?? '';
-    this.expired_at = data?.expired_at ?? '';
+    this.expired_at = UtilCommonTemplate.toDateTime(data?.expired_at || new Date);
   }
 
   public mapToList(data?: UserResponse[] | any[]): UserResponse[] {

@@ -8,10 +8,10 @@ import { UtilCommonTemplate } from "./utils/utils.common";
 import { ValidationFilter } from "./filters/validation.filter";
 import * as cookieParser from 'cookie-parser';
 import { HttpLogger } from "./interceptors/http-logger";
-import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
+import { DocumentBuilder, OpenAPIObject, SwaggerModule } from "@nestjs/swagger";
 
 async function bootstrap() {
-  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
+  const app: NestExpressApplication = await NestFactory.create<NestExpressApplication>(AppModule, {
     bodyParser: true,
   });
   // app.enableCors({
@@ -29,14 +29,14 @@ async function bootstrap() {
   app.setGlobalPrefix(process.env.API_PREFIX);
   app.useGlobalInterceptors(new HttpLogger());
 
-  const config = new DocumentBuilder()
+  const config: Omit<OpenAPIObject, "paths"> = new DocumentBuilder()
     .addBearerAuth()
     .setTitle('Stock Swagger')
     .setDescription('Stock API - Talented Investor')
     .setVersion('1.0')
     .build();
 
-  const document = SwaggerModule.createDocument(app, config);
+  const document: OpenAPIObject = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('docs', app, document, {
     customSiteTitle: 'Stock Swagger',
   });
@@ -56,9 +56,9 @@ async function bootstrap() {
 
   app.useStaticAssets(join(__dirname, '..', 'public'));
 
-  await app.listen(parseInt(process.env.SERVER_PORT)).then(() => {
+  await app.listen(parseInt(process.env.SERVER_PORT)).then((): void => {
     console.log(
-      `Server is running at ${process.env.SERVER_HOST}:${process.env.SERVER_PORT} --version: 0.0.06`,
+      `Server is running at ${process.env.SERVER_HOST}:${process.env.SERVER_PORT} --version: 0.0.07`,
     );
   });
 }

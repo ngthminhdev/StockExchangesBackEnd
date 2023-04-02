@@ -2,9 +2,9 @@ import { HttpStatus, Injectable } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { InjectRepository } from "@nestjs/typeorm";
 import * as bcrypt from "bcrypt";
-import { Repository } from "typeorm";
-import { ExceptionResponse } from "../exceptions/common.exception";
-import { UserResponse } from "../user/responses/UserResponse";
+import { FindOptionsWhere, Repository } from "typeorm";
+import { CatchException, ExceptionResponse } from "../exceptions/common.exception";
+import { UserResponse } from "../user/responses/user.response";
 import { UserEntity } from "../user/entities/user.entity";
 import { LoginDto } from "./dto/login.dto";
 import { RegisterDto } from "./dto/register.dto";
@@ -17,10 +17,10 @@ import { UtilCommonTemplate } from "../utils/utils.common";
 import { RefreshTokenResponse } from "./responses/RefreshToken.response";
 import { DeviceLoginInterface } from "./interfaces/device-login.interface";
 import { DeviceSessionResponse } from "./responses/DeviceSession.response";
+import { BaseResponse } from "../utils/utils.response";
 
 @Injectable()
 export class AuthService {
-
   constructor(
     @InjectRepository(DeviceEntity)
     private readonly deviceRepo: Repository<DeviceEntity>,
@@ -37,7 +37,7 @@ export class AuthService {
       deviceId: deviceId
     }, {
       secret: secretKey,
-      expiresIn: TimeToLive.OneDayMiliSeconds
+      expiresIn: TimeToLive.OneHour
     });
   }
 
@@ -47,38 +47,37 @@ export class AuthService {
       deviceId: deviceId
     }, {
       secret: process.env.REFRESH_TOKEN_SECRET,
-      expiresIn: TimeToLive.OneWeekMiliSeconds
+      expiresIn: TimeToLive.OneWeek
     });
   }
 
-  async register(data: RegisterDto): Promise<boolean> {
+  async register(data: RegisterDto): Promise<BaseResponse> {
     const user = await this.userRepo.findOne({
       where: { account_name: data.account_name }
     });
     if (user) {
-      throw new ExceptionResponse(HttpStatus.BAD_REQUEST, "Tài khoản đã được đăng ký");
+      throw new ExceptionResponse(HttpStatus.BAD_REQUEST, "account_name is already registered");
     }
     const saltOrRounds = 10;
     const hash: string = await bcrypt.hash(data.password, saltOrRounds);
-    const userSave: UserEntity = await this.userRepo.save({
+    await this.userRepo.save({
       ...data,
       password: hash
     });
-    await this.deviceRepo.save({ user: userSave });
 
-    return true;
+    return { status: HttpStatus.CREATED, message: "register successfully", data: null };
   }
 
   async login(req: MRequest, loginDto: LoginDto, headers: Headers, res: Response): Promise<UserResponse> {
     const { account_name, password } = loginDto;
     const user = await this.userRepo.findOne({ where: { account_name } });
     if (!user) {
-      throw new ExceptionResponse(HttpStatus.BAD_REQUEST, "Tài khoản không tồn tại");
+      throw new ExceptionResponse(HttpStatus.BAD_REQUEST, "account_name is not registered");
     }
 
     const isPasswordMatch = await bcrypt.compare(password, user.password);
     if (!isPasswordMatch) {
-      throw new ExceptionResponse(HttpStatus.BAD_REQUEST, "Tài khoản / mật khẩu không chính xác");
+      throw new ExceptionResponse(HttpStatus.BAD_REQUEST, "account_name or password is not correct");
     }
 
     // Lấy thông tin MAC ID, Device ID, địa chỉ IP và User Agent
@@ -141,8 +140,8 @@ export class AuthService {
     return { accessToken, refreshToken, expiredAt };
   }
 
-  async logout(userId: number, deviceId: string, res: Response): Promise<boolean> {
-    const currentSession = await this.deviceRepo
+  async logout(userId: number, deviceId: string, res: Response): Promise<BaseResponse> {
+    const currentSession: DeviceEntity = await this.deviceRepo
       .createQueryBuilder("device")
       .leftJoinAndSelect("device.user", "user")
       .select(["device", "user.user_id"])
@@ -161,12 +160,12 @@ export class AuthService {
     });
 
     await this.deviceRepo.delete({ device_id: deviceId });
-    return true;
+    return { status: HttpStatus.OK, message: "logged out successfully", data: null };
   }
 
   async refreshToken(req: MRequest, res: Response): Promise<RefreshTokenResponse> {
     // Lấy refresh token từ cookies của request
-    const refreshToken: string = req.cookies["refreshToken"];
+    const refreshToken: string = req?.cookies?.["refreshToken"];
     if (!refreshToken) {
       // Nếu không tìm thấy refresh token trong cookies thì trả về lỗi BAD_REQUEST
       throw new ExceptionResponse(HttpStatus.BAD_REQUEST, "refresh token not found");
@@ -187,10 +186,9 @@ export class AuthService {
       // Nếu không tìm thấy device trong database thì trả về lỗi BAD_REQUEST
       throw new ExceptionResponse(HttpStatus.BAD_REQUEST, "refresh token is not valid");
     }
-
     // Lấy thời gian hết hạn của refreshToken
-    const refreshExpired: number = (this.jwtService.decode(refreshToken))?.["exp"] * 1000;
-    if (refreshExpired < new Date().valueOf()) {
+    const refreshExpired: number = (this.jwtService.decode(refreshToken))?.["exp"];
+    if (refreshExpired < new Date().valueOf() / 1000) {
       // Nếu refreshToken đã hết hạn thì trả về lỗi BAD_REQUEST
       throw new ExceptionResponse(HttpStatus.BAD_REQUEST, "refresh token is not valid");
     }
@@ -213,26 +211,23 @@ export class AuthService {
       path: "/"
     });
     // Cập nhật thông tin của device trong database
-    const expiredAt: Date = new Date(Date.now() + TimeToLive.OneDayMiliSeconds);
     await this.deviceRepo.update({ device_id: deviceId },
       {
         secret_key: secretKey,
         refresh_token: newRefreshToken,
-        expired_at: expiredAt
       });
     // Trả về đối tượng RefreshTokenResponse cho client
     return new RefreshTokenResponse({
       access_token: newAccessToken,
-      expire_at: expiredAt
     });
   }
 
-  async getSecretKey(deviceId: string): Promise<string> {
+  async getSecretKey(deviceId: string): Promise<Pick<DeviceEntity, "secret_key" | "expired_at">> {
     return (await this.deviceRepo.findOne({
         where: { device_id: deviceId },
-        select: ["secret_key"]
+        select: ["secret_key", "expired_at"]
       })
-    )?.["secret_key"];
+    )
   }
 
   async getHistorySession(userId: number) {
@@ -244,4 +239,13 @@ export class AuthService {
 
     return new DeviceSessionResponse().mapToList(data);
   }
+
+  async delete(criteria: FindOptionsWhere<DeviceEntity> = {}): Promise<void> {
+    try {
+      await this.deviceRepo.delete(criteria);
+    } catch (e) {
+      throw new CatchException(e);
+    }
+  }
+
 }

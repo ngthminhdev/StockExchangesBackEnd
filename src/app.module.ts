@@ -4,9 +4,9 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { ConfigModuleModule } from "./config-module/config-module.module";
 import { ConfigServiceProvider } from "./config-module/config-module.service";
 import { JwtModule } from "@nestjs/jwt";
-import { AuthModule } from './auth/auth.module';
+import { AuthModule } from "./auth/auth.module";
 import { UserModule } from "./user/user.module";
-import { StockModule } from './stock/stock.module';
+import { StockModule } from "./stock/stock.module";
 import { MacMiddleware } from "./middlewares/mac.middleware";
 
 @Module({
@@ -19,14 +19,14 @@ import { MacMiddleware } from "./middlewares/mac.middleware";
       imports: [ConfigModuleModule],
       useFactory: (config: ConfigServiceProvider) =>
         config.createTypeOrmOptions(),
-      inject: [ConfigServiceProvider],
+      inject: [ConfigServiceProvider]
     }),
 
     //jwt
     JwtModule.registerAsync({
       imports: [ConfigModuleModule],
       useFactory: (config: ConfigServiceProvider) => config.createJwtOptions(),
-      inject: [ConfigServiceProvider],
+      inject: [ConfigServiceProvider]
     }),
 
     //redis
@@ -36,19 +36,19 @@ import { MacMiddleware } from "./middlewares/mac.middleware";
         return await config.createRedisOptions();
       },
       isGlobal: true,
-      inject: [ConfigServiceProvider],
+      inject: [ConfigServiceProvider]
     }),
 
     //application
     AuthModule,
     UserModule,
     StockModule
-  ],
+  ]
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(MacMiddleware)
-      .forRoutes('*')
+      .forRoutes("*");
   }
 }

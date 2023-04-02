@@ -25,7 +25,7 @@ export class RegisterDto {
     })
     email: string;
 
-    @IsPhoneNumber('VN')
+    @IsPhoneNumber('VN', {message: 'phone not found'})
     @ApiProperty({
         type: String,
         example: '0343892050',

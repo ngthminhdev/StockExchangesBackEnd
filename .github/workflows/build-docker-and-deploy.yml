@@ -22,7 +22,7 @@ jobs:
         args: >
           -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
           -Dsonar.projectName=${{ secrets.SONAR_PROJECT_NAME }}
-          -Dsonar.organizations=${{ secrets.SONAR_ORGANIZATIONS }}
+          -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }}
           -Dsonar.host.url=${{ env.SONAR_HOST_URL }}
           -Dsonar.login=${{ secrets.SONAR_TOKEN }}
           -Dsonar.qualitygate.wait=true

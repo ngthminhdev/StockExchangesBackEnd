@@ -18,7 +18,7 @@ EXPOSE 3001
 WORKDIR /SERVICE
 
 # Sensitive
-RUN yarn install --ignore-scripts
+RUN yarn
 
 RUN yarn build
 

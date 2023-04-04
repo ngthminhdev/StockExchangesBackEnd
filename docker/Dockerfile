@@ -1,13 +1,6 @@
 #Base image
 FROM node:latest
 
-USER root
-
-RUN addgroup -S nonroot \
-    && adduser -S nonroot -G nonroot
-
-USER nonroot
-
 COPY ["SERVICE.tgz", "/SERVICE.tgz"]
 COPY ["env", "/SERVICE/.env"]
 COPY ["start.sh", "/start.sh"]

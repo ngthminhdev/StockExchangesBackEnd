@@ -8,26 +8,27 @@ on:
     branches: [ "main" ]
 
 env:
-  SONAR_HOST_URL: https://sonarcloud.io/
+  SONAR_HOST_URL: https://sonarcloud.io
 
 jobs:
   build:
     runs-on: ubuntu-latest
     if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true)
     steps:
+    - name: Set up / Checkout
+      uses: actions/checkout@v3
+      
     - name: SonarQube Scan
       uses: SonarSource/sonarqube-scan-action@master
       with:
         sonar-token: ${{ secrets.SONAR_TOKEN }}
         args: >
-          -Dsonar.projectKey=ngthminhdev_StockExchangesBackEnd
-          -Dsonar.projectName=StockExchangesBackEnd
+          -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
+          -Dsonar.projectName=${{ secrets.SONAR_PROJECT_NAME }}
+          -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }}
           -Dsonar.host.url=${{ env.SONAR_HOST_URL }}
           -Dsonar.login=${{ secrets.SONAR_TOKEN }}
           -Dsonar.qualitygate.wait=true
-    
-    - name: Build the Docker image
-      uses: actions/checkout@v3
     
     - name: Get package version
       run: echo "::set-output name=version::$(cat package.json | jq -r '.version')"

@@ -1,8 +1,10 @@
 #Base image
 FROM node:latest
 
-RUN sudo addgroup -S nonroot \
-    && sudo adduser -S nonroot -G nonroot
+USER root
+
+RUN addgroup -S nonroot \
+    && adduser -S nonroot -G nonroot
 
 USER nonroot
 

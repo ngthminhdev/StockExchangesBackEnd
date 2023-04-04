@@ -22,6 +22,7 @@ async function bootstrap() {
 
   const config: Omit<OpenAPIObject, "paths"> = new DocumentBuilder()
     .addBearerAuth()
+    .setContact('Nguyen Thanh Minh','https://github.com/ngthminhdev', 'ngthminh.dev@gmail.com' )
     .setTitle('Stock Swagger')
     .setDescription('Stock API - Talented Investor')
     .setVersion('1.0')

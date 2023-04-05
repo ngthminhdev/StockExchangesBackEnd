@@ -46,6 +46,7 @@ async function bootstrap() {
 
   const config: Omit<OpenAPIObject, "paths"> = new DocumentBuilder()
     .addBearerAuth()
+    .addCookieAuth()
     .setContact('Nguyen Thanh Minh','https://github.com/ngthminhdev', 'ngthminh.dev@gmail.com' )
     .setTitle('Stock Swagger')
     .setDescription('Stock API - Talented Investor')

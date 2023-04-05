@@ -176,7 +176,7 @@ describe("AuthModule", () => {
           account_name: mockUser.account_name,
           password: mockUser.password
         })
-        // .expect(HttpStatus.OK);
+        .expect(HttpStatus.OK);
 
       const expectedFields = {
         access_token: expect.any(String),

@@ -9,8 +9,9 @@ export class MacMiddleware implements NestMiddleware {
     use(req: MRequest, res: Response, next: NextFunction) {
         const mac: string = getmac.default();
         const userAgent: string = req.headers['user-agent'];
+        const ip: string = req.ip;
 
-        const deviceId: string = UtilCommonTemplate.generateDeviceId(mac, userAgent);
+        const deviceId: string = UtilCommonTemplate.generateDeviceId(mac, userAgent, ip);
         req.mac = mac;
         req.deviceId = deviceId;
         next();

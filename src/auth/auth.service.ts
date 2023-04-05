@@ -83,7 +83,7 @@ export class AuthService {
     // Lấy thông tin MAC ID, Device ID, địa chỉ IP và User Agent
     const macId: string = req.mac;
     const deviceId: string = req.deviceId;
-    const ipAddress: string = req.socket.remoteAddress;
+    const ipAddress: string = req.ip;
     const userAgent: string = headers["user-agent"];
 
     // Xử lý phiên đăng nhập của thiết bị

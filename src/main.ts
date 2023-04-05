@@ -9,17 +9,40 @@ import { ValidationFilter } from "./filters/validation.filter";
 import * as cookieParser from 'cookie-parser';
 import { HttpLogger } from "./interceptors/http-logger";
 import { DocumentBuilder, OpenAPIObject, SwaggerModule } from "@nestjs/swagger";
+const fingerprint = require('express-fingerprint')
 
 async function bootstrap() {
   const app: NestExpressApplication = await NestFactory.create<NestExpressApplication>(AppModule, {
     bodyParser: true,
   });
 
-  app.enableCors({origin: '*'});
   app.enable('trust proxy');
-  app.use(cookieParser());
+  app.enableCors({origin: '*'});
   app.setGlobalPrefix(process.env.API_PREFIX);
   app.useGlobalInterceptors(new HttpLogger());
+  app.useGlobalFilters(new ValidationFilter());
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+      exceptionFactory(errors: ValidationError[]) {
+        return new ExceptionResponse(
+          HttpStatus.BAD_REQUEST,
+          UtilCommonTemplate.getMessageValidator(errors),
+        );
+      },
+    }),
+  );
+  app.useStaticAssets(join(__dirname, '..', 'public'));
+
+  app.use(cookieParser());
+  app.use(
+    fingerprint({
+      parameters: [
+        fingerprint["useragent"],
+        fingerprint["acceptHeaders"],
+        fingerprint["geoip"],
+      ]})
+  );
 
   const config: Omit<OpenAPIObject, "paths"> = new DocumentBuilder()
     .addBearerAuth()
@@ -33,21 +56,6 @@ async function bootstrap() {
   SwaggerModule.setup('docs', app, document, {
     customSiteTitle: 'Stock Swagger',
   });
-
-  app.useGlobalFilters(new ValidationFilter());
-  app.useGlobalPipes(
-    new ValidationPipe({
-      transform: true,
-      exceptionFactory(errors: ValidationError[]) {
-        return new ExceptionResponse(
-          HttpStatus.BAD_REQUEST,
-          UtilCommonTemplate.getMessageValidator(errors),
-        );
-      },
-    }),
-  );
-
-  app.useStaticAssets(join(__dirname, '..', 'public'));
 
   await app.listen(parseInt(process.env.SERVER_PORT)).then((): void => {
     console.log(

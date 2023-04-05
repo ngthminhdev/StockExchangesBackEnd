@@ -8,10 +8,10 @@ COPY ["start.sh", "/start.sh"]
 RUN tar -xzf SERVICE.tgz --directory /SERVICE && rm SERVICE.tgz
 
 # Sensitive
-RUN chmod -R 777 /SERVICE
+RUN chmod -R 775 /SERVICE
 
 # Sensitive
-RUN chmod -R 777 /start.sh
+RUN chmod -R 775 /start.sh
 
 EXPOSE 3001
 

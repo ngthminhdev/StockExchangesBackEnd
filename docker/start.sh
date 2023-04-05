@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# shellcheck disable=SC2164
 cd /SERVICE
 
 CONFIG_ARGS="s|CONFIG_SERVER_HOST|${CONFIG_SERVER_HOST}|g;\

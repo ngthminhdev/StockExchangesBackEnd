@@ -15,7 +15,8 @@ async function bootstrap() {
     bodyParser: true,
   });
 
-  app.enableCors({origin: '*'})
+  app.enableCors({origin: '*'});
+  app.enable('trust proxy');
   app.use(cookieParser());
   app.setGlobalPrefix(process.env.API_PREFIX);
   app.useGlobalInterceptors(new HttpLogger());
@@ -50,7 +51,7 @@ async function bootstrap() {
 
   await app.listen(parseInt(process.env.SERVER_PORT)).then((): void => {
     console.log(
-      `Server is running at ${process.env.SERVER_HOST}:${process.env.SERVER_PORT} --version: 0.0.12`,
+      `Server is running at ${process.env.SERVER_HOST}:${process.env.SERVER_PORT} --version: 0.0.13`,
     );
   });
 }

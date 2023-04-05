@@ -1,6 +1,6 @@
 {
   "name": "electric-board-back-end",
-  "version": "0.0.13",
+  "version": "0.0.14",
   "description": "VNDirect Stock clone API using NestJS, PostgreSQL, Redis and Socket.IO",
   "author": "Minh Nguyen",
   "private": true,

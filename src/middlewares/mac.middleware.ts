@@ -12,6 +12,7 @@ export class MacMiddleware implements NestMiddleware {
         const deviceId: string = fingerprint.hash;
         req.mac = mac;
         req.deviceId = deviceId;
+        req.realIP = req.headers['x-real-ip'] || req.headers['x-forwarded-for'] || req.socket.remoteAddress;
         next();
     }
 }

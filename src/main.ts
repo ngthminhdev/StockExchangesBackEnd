@@ -6,10 +6,9 @@ import { join } from "path";
 import { ExceptionResponse } from "./exceptions/common.exception";
 import { UtilCommonTemplate } from "./utils/utils.common";
 import { ValidationFilter } from "./filters/validation.filter";
-import * as cookieParser from 'cookie-parser';
+import * as cookieParser from "cookie-parser";
 import { HttpLogger } from "./interceptors/http-logger";
 import { DocumentBuilder, OpenAPIObject, SwaggerModule } from "@nestjs/swagger";
-const fingerprint = require('express-fingerprint')
 
 async function bootstrap() {
   const app: NestExpressApplication = await NestFactory.create<NestExpressApplication>(AppModule, {
@@ -35,14 +34,6 @@ async function bootstrap() {
   app.useStaticAssets(join(__dirname, '..', 'public'));
 
   app.use(cookieParser());
-  app.use(
-    fingerprint({
-      parameters: [
-        fingerprint["useragent"],
-        fingerprint["acceptHeaders"],
-        fingerprint["geoip"],
-      ]})
-  );
   app.set('trust proxy', true);
 
   const config: Omit<OpenAPIObject, "paths"> = new DocumentBuilder()
@@ -61,7 +52,7 @@ async function bootstrap() {
 
   await app.listen(parseInt(process.env.SERVER_PORT)).then((): void => {
     console.log(
-      `Server is running at ${process.env.SERVER_HOST}:${process.env.SERVER_PORT} --version: 0.0.16`,
+      `Server is running at ${process.env.SERVER_HOST}:${process.env.SERVER_PORT} --version: 0.0.17`,
     );
   });
 }

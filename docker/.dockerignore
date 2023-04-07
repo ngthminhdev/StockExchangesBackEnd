@@ -1,6 +1,5 @@
 /dist
 /node_modules
-/public
 /.idea
 /.vscode/*
 ./docker-compose.yml

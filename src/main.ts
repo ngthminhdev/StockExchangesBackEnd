@@ -48,11 +48,12 @@ async function bootstrap() {
   const document: OpenAPIObject = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('docs', app, document, {
     customSiteTitle: 'Stock Swagger',
+    customfavIcon: './favicon/favicon.svg'
   });
 
   await app.listen(parseInt(process.env.SERVER_PORT)).then((): void => {
     console.log(
-      `Server is running at ${process.env.SERVER_HOST}:${process.env.SERVER_PORT} --version: 0.0.18`,
+      `Server is running at ${process.env.SERVER_HOST}:${process.env.SERVER_PORT} --version: 0.0.19`,
     );
   });
 }

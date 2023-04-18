@@ -15,7 +15,6 @@ pipeline {
 
         stage('Get version') {
             steps {
-                sh 'chmod +rw package.json'
                 script {
                     VERSION = sh(returnStdout: true, script: "cat package.json | jq -r '.version'").trim()
                     echo "Version: $VERSION"
@@ -25,7 +24,7 @@ pipeline {
 
         stage('Compress Code') {
             steps {
-                sh 'dockerd-entrypoint.sh & chmod +x ./compress.sh && ./compress.sh'
+                sh 'chmod +x ./compress.sh && ./compress.sh'
             }
         }
 

@@ -3,7 +3,7 @@ pipeline {
     environment {
         registryUrl = "https://index.docker.io/v1/"
         credentialsId = "DOCKER_HUB"
-        dockerImageName = "stock-docker-hub"
+        dockerImageName = "electric-board-backend"
         dockerfilePath = "./docker"
     }
     stages {
@@ -32,7 +32,9 @@ pipeline {
             steps {
                 script {
                     withDockerRegistry([credentialsId: credentialsId, url: registryUrl]) {
-                        def dockerImage = docker.build("ngthminhdev/stock-docker-hub:${VERSION}", "./docker")
+                        // Đăng nhập Docker registry trước khi build và push image
+                        sh 'sudo docker login -u <username> -p <password> <registry_url>'
+                        def dockerImage = docker.build("ngthminhdev/electric-board-backend:${VERSION}", "./docker")
                         dockerImage.push()
                     }
                 }

@@ -31,7 +31,7 @@ pipeline {
         stage('Build and Push Docker Image') {
             steps {
                 script {
-                    sh 'sudo docker login -u ngthminhdev -p kimlien0602 https://index.docker.io/v1/'
+                    sh 'sudo docker login'
                     withDockerRegistry([credentialsId: credentialsId, url: registryUrl]) {
                         // Đăng nhập Docker registry trước khi build và push image
                         def dockerImage = docker.build("ngthminhdev/electric-board-backend:${VERSION}", "./docker")

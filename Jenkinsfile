@@ -16,7 +16,7 @@ pipeline {
         stage('Get version') {
             steps {
                 script {
-                    VERSION = sh(returnStdout: true, script: "cat package.json | jq -r '.version'").trim()
+                    VERSION = sh(returnStdout: true, script: "cat ./package.json | jq -r '.version'").trim()
                     echo "Version: $VERSION"
                 }
             }

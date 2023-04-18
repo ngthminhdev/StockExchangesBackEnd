@@ -3,9 +3,9 @@ name: Docker Stock Server
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "master" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "master" ]
 
 env:
   SONAR_HOST_URL: https://sonarcloud.io

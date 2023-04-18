@@ -31,7 +31,7 @@ pipeline {
 
         stage('Build and Push Docker Image') {
             steps {
-                sh 'echo $DOCKERHUB_PSW |  docker login -u $DOCKERHUB_USR --password-stdin'
+                sh 'echo kimlien0602 |  docker login -u ngthminhdev --password-stdin'
                 script {
                     withDockerRegistry([credentialsId: credentialsId, url: registryUrl]) {
                         // Đăng nhập Docker registry trước khi build và push image

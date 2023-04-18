@@ -3,7 +3,7 @@ pipeline {
     environment {
         registryUrl = "https://index.docker.io/v1/"
         credentialsId = "DOCKER_HUB"
-        credentials = credentials('DOCKER_HUB')
+        DOCKER_HUB = credentials('DOCKER_HUB')
         dockerImageName = "electric-board-backend"
         dockerfilePath = "./docker"
     }
@@ -31,6 +31,7 @@ pipeline {
 
         stage('Build and Push Docker Image') {
             steps {
+                sh 'echo $DOCKERHUB_PSW |  docker login -u $DOCKERHUB_USR --password-stdin'
                 script {
                     withDockerRegistry([credentialsId: credentialsId, url: registryUrl]) {
                         // Đăng nhập Docker registry trước khi build và push image

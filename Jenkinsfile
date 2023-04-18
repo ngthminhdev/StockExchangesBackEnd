@@ -3,6 +3,7 @@ pipeline {
     environment {
         registryUrl = "https://index.docker.io/v1/"
         credentialsId = "DOCKER_HUB"
+        credentials = credentials('DOCKER_HUB')
         dockerImageName = "electric-board-backend"
         dockerfilePath = "./docker"
     }

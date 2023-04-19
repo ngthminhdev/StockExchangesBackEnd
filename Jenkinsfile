@@ -46,7 +46,7 @@ pipeline {
                     remote.user = 'ubuntu'
                     remote.allowAnyHosts = true
                     remote.identityFile = credentials('leader-key.pem')
-                    sshCommand remote: remote, command: 'export TAG=${VERSION} && cd ~/stock-server && sudo chmod +x ./deploy.sh && ./deploy.sh'
+                    sshCommand remote: remote, command: 'export TAG=${VERSION} && cd ~/stock-server && chmod +x ./deploy.sh && ./deploy.sh'
                 }
             }
         }

@@ -29,35 +29,34 @@ pipeline {
             }
         }
 
-        stage('Build Image') {
-            steps {
-                script {
-                    docker.build('ngthminhdev/electric-board-backend:${VERSION}', './docker')
-                }
-            }
-        }
-
-
-        stage('Push image to hub') {
-            steps {
-                script {
-                    docker.withRegistry(credentialsId: "DOCKER_HUB", url: 'https://index.docker.io/v1/') {
-                        docker.image('ngthminhdev/electric-board-backend:${VERSION}').push()
-                    }
-                }
-            }
-        }
-
-//         stage('Build and Push Docker Image') {
+//         stage('Build Image') {
 //             steps {
 //                 script {
-//                     withDockerRegistry([credentialsId: credentialsId, url: registryUrl]) {
-//                         def dockerImage = docker.build("ngthminhdev/electric-board-backend:${VERSION}", "./docker")
-//                         dockerImage.push()
+//                     docker.build('ngthminhdev/electric-board-backend:${VERSION}', './docker')
+//                 }
+//             }
+//         }
+//
+//         stage('Push image to hub') {
+//             steps {
+//                 script {
+//                     docker.withRegistry(credentialsId: "DOCKER_HUB", url: 'https://index.docker.io/v1/') {
+//                         docker.image('ngthminhdev/electric-board-backend:${VERSION}').push()
 //                     }
 //                 }
 //             }
 //         }
+
+        stage('Build and Push Docker Image') {
+            steps {
+                script {
+                    withDockerRegistry([credentialsId: credentialsId, url: registryUrl]) {
+                        def dockerImage = docker.build("ngthminhdev/electric-board-backend:${VERSION}", "./docker")
+                        dockerImage.push()
+                    }
+                }
+            }
+        }
     }
 
     post {

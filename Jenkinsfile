@@ -3,9 +3,6 @@ pipeline {
     environment {
         registryUrl = "https://index.docker.io/v1/"
         credentialsId = "DOCKER_HUB"
-        DOCKER_HUB = credentials('DOCKER_HUB')
-        dockerImageName = "electric-board-backend"
-        dockerfilePath = "./docker"
     }
     stages {
         stage('Checkout') {
@@ -29,24 +26,6 @@ pipeline {
             }
         }
 
-//         stage('Build Image') {
-//             steps {
-//                 script {
-//                     docker.build('ngthminhdev/electric-board-backend:${VERSION}', './docker')
-//                 }
-//             }
-//         }
-//
-//         stage('Push image to hub') {
-//             steps {
-//                 script {
-//                     docker.withRegistry(credentialsId: "DOCKER_HUB", url: 'https://index.docker.io/v1/') {
-//                         docker.image('ngthminhdev/electric-board-backend:${VERSION}').push()
-//                     }
-//                 }
-//             }
-//         }
-
         stage('Build and Push Docker Image') {
             steps {
                 script {
@@ -57,6 +36,20 @@ pipeline {
                 }
             }
         }
+
+        stage('Deploy to EC2') {
+            steps {
+                script {
+                    def remote = [:]
+                    remote.name = 'Leader'
+                    remote.host = 'ec2-52-77-145-158.ap-southeast-1.compute.amazonaws.com'
+                    remote.user = 'ubuntu'
+                    remote.identityFile = credentials('SECRET_KEY_EC2')
+                    sshCommand remote: remote, command: 'export TAG=${VERSION} && cd ~/stock-server && sudo chmod +x ./deploy.sh && ./deploy.sh'
+                }
+            }
+        }
+
     }
 
     post {

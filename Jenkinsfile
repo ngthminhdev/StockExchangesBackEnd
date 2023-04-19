@@ -29,19 +29,25 @@ pipeline {
             }
         }
 
-        stage('Build and Push Docker Image') {
+        stage('Build Image') {
             steps {
-//                 sh 'echo kimlien0602 | sudo docker login -u ngthminhdev --password-stdin'
                 script {
-                    sh 'echo "minh" | sudo -S docker login -u ngthminhdev -p - https://index.docker.io/v1/'
-                    withDockerRegistry([credentialsId: credentialsId, url: registryUrl]) {
-                        // Đăng nhập Docker registry trước khi build và push image
-                        def dockerImage = docker.build("ngthminhdev/electric-board-backend:${VERSION}", "./docker")
-                        dockerImage.push()
-                    }
+                    def newImage = docker.build('ngthminhdev/electric-board-backend', './docker')
+                    newImage.push()
                 }
             }
         }
+
+//         stage('Build and Push Docker Image') {
+//             steps {
+//                 script {
+//                     withDockerRegistry([credentialsId: credentialsId, url: registryUrl]) {
+//                         def dockerImage = docker.build("ngthminhdev/electric-board-backend:${VERSION}", "./docker")
+//                         dockerImage.push()
+//                     }
+//                 }
+//             }
+//         }
     }
 
     post {

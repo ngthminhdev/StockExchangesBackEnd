@@ -32,8 +32,18 @@ pipeline {
         stage('Build Image') {
             steps {
                 script {
-                    def newImage = docker.build('ngthminhdev/electric-board-backend', './docker')
-                    newImage.push()
+                    docker.build('ngthminhdev/electric-board-backend:${VERSION}', './docker')
+                }
+            }
+        }
+
+
+        stage('Push image to hub') {
+            steps {
+                script {
+                    docker.withRegistry(credentialsId: "DOCKER_HUB", url: 'https://index.docker.io/v1/') {
+                        docker.image('ngthminhdev/electric-board-backend:${VERSION}').push()
+                    }
                 }
             }
         }

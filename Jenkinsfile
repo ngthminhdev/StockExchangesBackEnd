@@ -44,6 +44,7 @@ pipeline {
                     remote.name = 'Leader'
                     remote.host = 'ec2-52-77-145-158.ap-southeast-1.compute.amazonaws.com'
                     remote.user = 'ubuntu'
+                    remote.allowAnyHosts = true
                     remote.identityFile = credentials('SECRET_KEY_EC2')
                     sshCommand remote: remote, command: 'export TAG=${VERSION} && cd ~/stock-server && sudo chmod +x ./deploy.sh && ./deploy.sh'
                 }
